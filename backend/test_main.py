@@ -7,7 +7,7 @@ from unittest import mock
 from database import find_ticket_matches, init_db, list_latest_draws, save_draw_result, save_winner
 from parser import _parse_lottery_text
 from result_fetcher import _find_latest_result_url
-from update_public_results import merge_results
+from update_public_results import backfill_missing_draw_codes, merge_results
 
 
 class FindLatestResultUrlTests(unittest.TestCase):
@@ -47,6 +47,7 @@ class LotteryTextParserTests(unittest.TestCase):
         result = _parse_lottery_text(text)
 
         self.assertEqual(result["lottery_name"], "BHAGYATHARA")
+        self.assertEqual(result["draw_code"], "BT-73")
         self.assertEqual(result["draw_date"], "2026-09-28")
         self.assertEqual(
             result["winners"][0],
@@ -71,6 +72,19 @@ class LotteryTextParserTests(unittest.TestCase):
 
 
 class PublicResultsTests(unittest.TestCase):
+    def test_backfills_missing_draw_codes_without_replacing_existing_codes(self):
+        draws = [
+            {"draw_date": "2026-10-01", "pdf_path": "https://example.com/old.pdf"},
+            {"draw_date": "2026-10-02", "draw_code": "DL-71", "pdf_path": "https://example.com/new.pdf"},
+        ]
+        lookup = mock.Mock(return_value="KN-643")
+
+        backfill_missing_draw_codes(draws, lookup)
+
+        self.assertEqual(draws[0]["draw_code"], "KN-643")
+        self.assertEqual(draws[1]["draw_code"], "DL-71")
+        lookup.assert_called_once_with("https://example.com/old.pdf")
+
     def test_merge_replaces_same_draw_and_normalizes_winning_numbers(self):
         existing = [
             {
@@ -82,6 +96,7 @@ class PublicResultsTests(unittest.TestCase):
         ]
         latest = {
             "lottery_name": "KARUNYA PLUS",
+            "draw_code": "KN-643",
             "draw_date": "2026-10-01",
             "source_url": "https://example.com/",
             "pdf_url": "https://example.com/result.pdf",
@@ -96,6 +111,7 @@ class PublicResultsTests(unittest.TestCase):
             draws[0]["winners"],
             [{"prize_tier": "1st", "prize_amount": 10000000, "winning_number": "PH901174"}],
         )
+        self.assertEqual(draws[0]["draw_code"], "KN-643")
 
     def test_existing_database_stores_prize_amounts_and_matches_ticket_suffix(self):
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -128,13 +144,18 @@ class PublicResultsTests(unittest.TestCase):
                 init_db()
                 draw_id = save_draw_result("KARUNYA PLUS", "2026-10-01")
                 save_winner(draw_id, "1st", "PH 901174", 10000000)
+                older_draw_id = save_draw_result("KARUNYA PLUS", "2026-09-24")
+                save_winner(older_draw_id, "2nd", "PH 901174", 3000000)
 
                 draws = list_latest_draws(limit=1)
-                matches = find_ticket_matches("901174")
+                matches = find_ticket_matches("901174", "2026-10-01")
+                other_date_matches = find_ticket_matches("901174", "2026-09-24")
 
             self.assertEqual(draws[0]["winners"][0]["prize_amount"], 10000000)
+            self.assertEqual(len(matches), 1)
             self.assertEqual(matches[0]["winning_number"], "PH901174")
             self.assertEqual(matches[0]["prize_amount"], 10000000)
+            self.assertEqual(other_date_matches[0]["prize_tier"], "2nd")
 
 
 if __name__ == "__main__":

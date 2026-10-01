@@ -15,6 +15,7 @@ const _mintDeep = Color(0xFF1D7D76);
 const _textDark = Color(0xFF1E2C3A);
 const _mutedText = Color(0xFF7A8594);
 const _successGreen = Color(0xFF2E9D70);
+
 class KeralaLotteryApp extends StatelessWidget {
   const KeralaLotteryApp({super.key});
 
@@ -53,6 +54,7 @@ class _LotteryHomePageState extends State<LotteryHomePage> {
   int _selectedTab = 0;
   String _searchQuery = '';
   String? _selectedDraw;
+  DateTime? _selectedDrawDate;
   String? _statusMessage;
   bool _isCheckingTicket = false;
   bool _isLoadingSavedDraws = true;
@@ -82,7 +84,8 @@ class _LotteryHomePageState extends State<LotteryHomePage> {
       });
     } catch (error) {
       if (!mounted) return;
-      setState(() => _savedResultsError = error.toString().replaceFirst('Exception: ', ''));
+      setState(() => _savedResultsError =
+          error.toString().replaceFirst('Exception: ', ''));
     } finally {
       if (mounted) setState(() => _isLoadingSavedDraws = false);
     }
@@ -100,11 +103,14 @@ class _LotteryHomePageState extends State<LotteryHomePage> {
       if (!mounted) return;
       setState(() {
         _savedDraws = draws;
-        _savedResultsError = draws.isEmpty ? 'No published lottery results are available yet.' : null;
+        _savedResultsError = draws.isEmpty
+            ? 'No published lottery results are available yet.'
+            : null;
       });
     } catch (error) {
       if (!mounted) return;
-      setState(() => _savedResultsError = error.toString().replaceFirst('Exception: ', ''));
+      setState(() => _savedResultsError =
+          error.toString().replaceFirst('Exception: ', ''));
     } finally {
       if (mounted) setState(() => _isFetchingLatest = false);
     }
@@ -120,12 +126,33 @@ class _LotteryHomePageState extends State<LotteryHomePage> {
     }
   }
 
+  Future<void> _selectDrawDate() async {
+    final today = DateTime.now();
+    final selectedDate = await showDatePicker(
+      context: context,
+      initialDate: _selectedDrawDate ?? today,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(today.year, today.month, today.day),
+    );
+    if (selectedDate == null || !mounted) return;
+
+    setState(() {
+      _selectedDrawDate = selectedDate;
+      _ticketMatches = null;
+      _statusMessage = null;
+    });
+  }
+
   Future<void> _checkTicket() async {
     final code = _ticketController.text.trim();
-    if (code.isEmpty || _isCheckingTicket) {
+    if (_isCheckingTicket) return;
+    if (code.isEmpty || _selectedDrawDate == null) {
       setState(() {
         _ticketMatches = null;
-        _statusMessage = code.isEmpty ? 'Enter a ticket number to check.' : _statusMessage;
+        _statusMessage =
+            code.isEmpty
+                ? 'Enter a ticket number to check.'
+                : 'Select the draw date to check this ticket.';
       });
       return;
     }
@@ -136,59 +163,35 @@ class _LotteryHomePageState extends State<LotteryHomePage> {
       _statusMessage = null;
     });
     try {
-      final matches = await _lotteryService.checkTicket(code);
+      final matches = await _lotteryService.checkTicket(
+        code,
+        drawDate: _isoDrawDate(_selectedDrawDate!),
+      );
       if (mounted) setState(() => _ticketMatches = matches);
     } catch (error) {
       if (mounted) {
-        setState(() => _statusMessage = error.toString().replaceFirst('Exception: ', ''));
+        setState(() =>
+            _statusMessage = error.toString().replaceFirst('Exception: ', ''));
       }
     } finally {
       if (mounted) setState(() => _isCheckingTicket = false);
     }
   }
 
+  String _isoDrawDate(DateTime date) =>
+      '${date.year.toString().padLeft(4, '0')}-'
+      '${date.month.toString().padLeft(2, '0')}-'
+      '${date.day.toString().padLeft(2, '0')}';
+
+  String _displayDrawDate(DateTime date) =>
+      '${date.day.toString().padLeft(2, '0')}/'
+      '${date.month.toString().padLeft(2, '0')}/'
+      '${date.year.toString().padLeft(4, '0')}';
+
   void _showDrawResults(LotteryDraw draw) {
-    showDialog<void>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(draw.lotteryName),
-        content: SizedBox(
-          width: 400,
-          height: 360,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Draw date: ${draw.drawDate}'),
-              const SizedBox(height: 8),
-              Expanded(
-                child: draw.winners.isEmpty
-                    ? const Center(child: Text('No winning numbers saved for this draw.'))
-                    : ListView.separated(
-                        itemCount: draw.winners.length,
-                        separatorBuilder: (_, __) => const Divider(height: 1),
-                        itemBuilder: (context, index) {
-                          final winner = draw.winners[index];
-                          return ListTile(
-                            dense: true,
-                            contentPadding: EdgeInsets.zero,
-                            title: Text(winner.prizeTier),
-                            trailing: Text(
-                              winner.winningNumber,
-                              style: const TextStyle(fontWeight: FontWeight.w700),
-                            ),
-                          );
-                        },
-                      ),
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Close'),
-          ),
-        ],
+    Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (_) => LotteryResultPage(draw: draw),
       ),
     );
   }
@@ -214,7 +217,7 @@ class _LotteryHomePageState extends State<LotteryHomePage> {
         actions: [
           IconButton(
             tooltip: 'Open ticket scanner',
-            onPressed: () => setState(() => _selectedTab = 2),
+            onPressed: () => setState(() => _selectedTab = 1),
             icon: const Icon(Icons.qr_code_scanner, size: 21),
           ),
         ],
@@ -224,7 +227,6 @@ class _LotteryHomePageState extends State<LotteryHomePage> {
         index: _selectedTab,
         children: [
           _buildHomePage(),
-          _buildSearchPage(),
           _buildCheckerPage(),
           _buildPredictionPage(),
         ],
@@ -241,10 +243,14 @@ class _LotteryHomePageState extends State<LotteryHomePage> {
         iconSize: 19,
         elevation: 8,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home_outlined), activeIcon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.article_outlined), activeIcon: Icon(Icons.article), label: 'Results'),
-          BottomNavigationBarItem(icon: Icon(Icons.qr_code_scanner), label: 'Scan'),
-          BottomNavigationBarItem(icon: Icon(Icons.card_giftcard_outlined), activeIcon: Icon(Icons.card_giftcard), label: 'Rewards'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.home_outlined),
+              activeIcon: Icon(Icons.home),
+              label: 'Home'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.qr_code_scanner), label: 'Scan'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.insights_outlined), label: 'Prediction'),
         ],
       ),
     );
@@ -252,6 +258,10 @@ class _LotteryHomePageState extends State<LotteryHomePage> {
 
   Widget _buildHomePage() {
     final recentDraws = _savedDraws.take(3).toList();
+    final filteredDraws = _savedDraws
+        .where((draw) =>
+            draw.lotteryName.contains(_searchQuery.trim().toUpperCase()))
+        .toList();
 
     return SafeArea(
       child: SingleChildScrollView(
@@ -285,7 +295,8 @@ class _LotteryHomePageState extends State<LotteryHomePage> {
                           color: Color(0xFF37B6A1),
                           borderRadius: BorderRadius.all(Radius.circular(12)),
                         ),
-                        child: const Icon(Icons.qr_code, color: Colors.white, size: 20),
+                        child: const Icon(Icons.qr_code,
+                            color: Colors.white, size: 20),
                       ),
                       const SizedBox(width: 12),
                       const Column(
@@ -331,11 +342,12 @@ class _LotteryHomePageState extends State<LotteryHomePage> {
                   ),
                   const SizedBox(height: 16),
                   InkWell(
-                    onTap: () => setState(() => _selectedTab = 2),
+                    onTap: () => setState(() => _selectedTab = 1),
                     borderRadius: const BorderRadius.all(Radius.circular(16)),
                     child: Container(
                       width: double.infinity,
-                      padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 18),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 18, horizontal: 18),
                       decoration: const BoxDecoration(
                         gradient: LinearGradient(
                           colors: [Color(0xFF2AAEA3), Color(0xFF1E8E85)],
@@ -351,9 +363,11 @@ class _LotteryHomePageState extends State<LotteryHomePage> {
                             height: 54,
                             decoration: const BoxDecoration(
                               color: Color.fromRGBO(255, 255, 255, 0.18),
-                              borderRadius: BorderRadius.all(Radius.circular(16)),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(16)),
                             ),
-                            child: const Icon(Icons.qr_code_scanner, color: Colors.white, size: 28),
+                            child: const Icon(Icons.qr_code_scanner,
+                                color: Colors.white, size: 28),
                           ),
                           const SizedBox(width: 14),
                           const Expanded(
@@ -379,7 +393,8 @@ class _LotteryHomePageState extends State<LotteryHomePage> {
                               ],
                             ),
                           ),
-                          const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white, size: 18),
+                          const Icon(Icons.arrow_forward_ios_rounded,
+                              color: Colors.white, size: 18),
                         ],
                       ),
                     ),
@@ -387,6 +402,10 @@ class _LotteryHomePageState extends State<LotteryHomePage> {
                 ],
               ),
             ),
+            if (_ticketMatches != null) ...[
+              const SizedBox(height: 18),
+              _buildLastTicketCheckCard(),
+            ],
             const SizedBox(height: 22),
             const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -400,7 +419,7 @@ class _LotteryHomePageState extends State<LotteryHomePage> {
                   ),
                 ),
                 Text(
-                  'See all',
+                  'Latest draws',
                   style: TextStyle(
                     fontSize: 12,
                     color: _brandBlue,
@@ -417,6 +436,7 @@ class _LotteryHomePageState extends State<LotteryHomePage> {
             else
               Column(
                 children: recentDraws.map((draw) {
+                  final firstPrizeAmount = draw.firstPrize?.prizeAmount;
                   return Container(
                     margin: const EdgeInsets.only(bottom: 10),
                     padding: const EdgeInsets.all(12),
@@ -459,7 +479,7 @@ class _LotteryHomePageState extends State<LotteryHomePage> {
                               ),
                               const SizedBox(height: 2),
                               Text(
-                                draw.drawDate,
+                                '${draw.drawCode ?? 'Draw code unavailable'} · ${draw.drawDate}',
                                 style: const TextStyle(
                                   fontSize: 11,
                                   color: _mutedText,
@@ -472,7 +492,9 @@ class _LotteryHomePageState extends State<LotteryHomePage> {
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Text(
-                              '${draw.winners.length} numbers',
+                              firstPrizeAmount == null
+                                  ? '1st prize unavailable'
+                                  : _formatRupees(firstPrizeAmount),
                               style: const TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
@@ -481,7 +503,7 @@ class _LotteryHomePageState extends State<LotteryHomePage> {
                             ),
                             const SizedBox(height: 4),
                             const Text(
-                              'View result',
+                              '1st prize · View result',
                               style: TextStyle(fontSize: 10, color: _mutedText),
                             ),
                           ],
@@ -491,63 +513,124 @@ class _LotteryHomePageState extends State<LotteryHomePage> {
                   );
                 }).toList(),
               ),
-            const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              child: _quickActionCard(
-                icon: Icons.article_outlined,
-                label: 'Results',
-                color: const Color(0xFF4AC3A5),
-                onTap: () => setState(() => _selectedTab = 1),
+            const SizedBox(height: 22),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'All Lottery Results',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: _textDark,
+                  ),
+                ),
+                Text(
+                  '${filteredDraws.length} draws',
+                  style: const TextStyle(fontSize: 12, color: _mutedText),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            TextField(
+              onChanged: (value) => setState(() => _searchQuery = value),
+              decoration: InputDecoration(
+                hintText: 'Search lottery draws',
+                prefixIcon: const Icon(Icons.search, size: 20),
+                isDense: true,
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide.none,
+                ),
               ),
             ),
+            const SizedBox(height: 12),
+            if (_isLoadingSavedDraws)
+              const Center(child: CircularProgressIndicator())
+            else if (filteredDraws.isEmpty)
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 24),
+                child: Center(child: Text('No matching lottery results')),
+              )
+            else
+              GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: filteredDraws.length,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                  mainAxisExtent: 112,
+                ),
+                itemBuilder: (context, index) =>
+                    _drawTile(filteredDraws[index], index),
+              ),
           ],
         ),
       ),
     );
   }
 
-  Widget _quickActionCard({
-    required IconData icon,
-    required String label,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: const BorderRadius.all(Radius.circular(16)),
-      child: Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFFE8EDF2)),
+  Widget _buildLastTicketCheckCard() {
+    final matches = _ticketMatches!;
+    final isWinner = matches.isNotEmpty;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: isWinner ? const Color(0xFFE7F6EF) : const Color(0xFFF1F4F7),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: isWinner ? const Color(0xFFB9E6D2) : const Color(0xFFDCE3E9),
         ),
-        child: Row(
-          children: [
-            Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                color: color.withAlpha((255 * 0.14).round()),
-                borderRadius: const BorderRadius.all(Radius.circular(12)),
-              ),
-              child: Icon(icon, color: color, size: 18),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            isWinner ? 'You won!' : 'No win, better luck next time.',
+            style: TextStyle(
+              color: isWinner ? _successGreen : _textDark,
+              fontSize: 15,
+              fontWeight: FontWeight.w800,
             ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                label,
-                style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
-                  color: _textDark,
+          ),
+          const SizedBox(height: 8),
+          if (isWinner)
+            ...matches.map(
+              (match) => Padding(
+                padding: const EdgeInsets.only(top: 3),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        '${match.prizeTier} · ${match.lotteryName}',
+                        style: const TextStyle(color: _textDark, fontSize: 12),
+                      ),
+                    ),
+                    Text(
+                      match.prizeAmount == null
+                          ? 'Amount unavailable'
+                          : _formatRupees(match.prizeAmount!),
+                      style: const TextStyle(
+                        color: _mintDeep,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ],
                 ),
               ),
+            )
+          else
+            Text(
+              _ticketController.text.trim(),
+              style: const TextStyle(color: _mutedText, fontSize: 12),
             ),
-            Icon(Icons.chevron_right, color: color, size: 18),
-          ],
-        ),
+        ],
       ),
     );
   }
@@ -560,21 +643,25 @@ class _LotteryHomePageState extends State<LotteryHomePage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
-              _savedResultsError == null ? Icons.inbox_outlined : Icons.cloud_off_outlined,
+              _savedResultsError == null
+                  ? Icons.inbox_outlined
+                  : Icons.cloud_off_outlined,
               size: 38,
               color: const Color(0xFF78818D),
             ),
             const SizedBox(height: 10),
             Text(
-              _savedResultsError == null ? 'No saved results yet' : 'Could not load results',
+              _savedResultsError == null
+                  ? 'No saved results yet'
+                  : 'Could not load results',
               style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 6),
             Text(
-                _savedResultsError ??
+              _savedResultsError ??
                   (_lotteryService.usesPublishedResults
-                    ? 'No published draws are available yet.'
-                    : 'Fetch the latest official draw to add results to the server.'),
+                      ? 'No published draws are available yet.'
+                      : 'Fetch the latest official draw to add results to the server.'),
               textAlign: TextAlign.center,
               style: const TextStyle(fontSize: 12, color: Color(0xFF78818D)),
             ),
@@ -586,12 +673,18 @@ class _LotteryHomePageState extends State<LotteryHomePage> {
                       dimension: 16,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                    : Icon(_lotteryService.usesPublishedResults ? Icons.sync : Icons.download_outlined),
-                  label: Text(
-                  _isFetchingLatest
-                    ? (_lotteryService.usesPublishedResults ? 'Refreshing...' : 'Fetching...')
-                    : (_lotteryService.usesPublishedResults ? 'Refresh results' : 'Fetch latest result'),
-                  ),
+                  : Icon(_lotteryService.usesPublishedResults
+                      ? Icons.sync
+                      : Icons.download_outlined),
+              label: Text(
+                _isFetchingLatest
+                    ? (_lotteryService.usesPublishedResults
+                        ? 'Refreshing...'
+                        : 'Fetching...')
+                    : (_lotteryService.usesPublishedResults
+                        ? 'Refresh results'
+                        : 'Fetch latest result'),
+              ),
             ),
           ],
         ),
@@ -599,69 +692,16 @@ class _LotteryHomePageState extends State<LotteryHomePage> {
     );
   }
 
-  Widget _buildSearchPage() {
-    final filteredDraws = _savedDraws
-        .where((draw) => draw.lotteryName.contains(_searchQuery.trim().toUpperCase()))
-        .toList();
-    return CustomScrollView(
-      slivers: [
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(12, 12, 12, 10),
-            child: TextField(
-              onChanged: (value) => setState(() => _searchQuery = value),
-              decoration: InputDecoration(
-                hintText: 'Search lottery draws',
-                prefixIcon: const Icon(Icons.search, size: 20),
-                isDense: true,
-                filled: true,
-                fillColor: Colors.white,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide.none,
-                ),
-              ),
-            ),
-          ),
-        ),
-        if (filteredDraws.isEmpty)
-          const SliverFillRemaining(
-            hasScrollBody: false,
-            child: Center(child: Text('No matching saved results')),
-          )
-        else
-          SliverPadding(
-            padding: const EdgeInsets.fromLTRB(10, 0, 10, 12),
-            sliver: _buildDrawGrid(filteredDraws),
-          ),
-      ],
-    );
-  }
-
-  SliverGrid _buildDrawGrid(List<LotteryDraw> draws) {
-    return SliverGrid.builder(
-      itemCount: draws.length,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 8,
-        mainAxisSpacing: 8,
-        mainAxisExtent: 86,
-      ),
-      itemBuilder: (context, index) => _drawTile(draws[index], index),
-    );
-  }
-
   Widget _drawTile(LotteryDraw draw, int index) {
-    final shades = [
-      _brandBlue,
-      const Color(0xFF1B5DB5),
-      const Color(0xFF2056A0),
-      const Color(0xFF164A98),
-    ];
-    final color = shades[index % shades.length];
+    final firstPrizeAmount = draw.firstPrize?.prizeAmount;
+    final isLatest = _savedDraws.isNotEmpty &&
+        draw.id == _savedDraws.first.id;
     return Material(
-      color: color,
-      borderRadius: BorderRadius.circular(5),
+      color: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: const BorderSide(color: Color(0xFFE2E8EE)),
+      ),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () => _showDrawResults(draw),
@@ -669,88 +709,119 @@ class _LotteryHomePageState extends State<LotteryHomePage> {
           children: [
             Expanded(
               child: Stack(
-                alignment: Alignment.center,
                 children: [
-                  Positioned(
-                    top: 5,
-                    left: 5,
-                    child: _tileTag('DRAW'),
+                  const Positioned.fill(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [Color(0xFF2AAEA3), Color(0xFF1E8E85)],
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                        ),
+                      ),
+                    ),
                   ),
                   Positioned(
-                    top: 5,
-                    right: 5,
-                    child: _tileTag('RESULTS'),
+                    top: 6,
+                    right: 6,
+                    child: Container(
+                      constraints: const BoxConstraints(maxWidth: 90),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 7, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withAlpha(48),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        draw.drawCode ?? 'Code unavailable',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 9,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 19),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          draw.lotteryName,
-                          maxLines: 1,
-                          textAlign: TextAlign.center,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
+                  if (isLatest)
+                    Positioned(
+                      top: 6,
+                      left: 6,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFD8423A),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: const Text(
+                          'NEW',
+                          style: TextStyle(
                             color: Colors.white,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700,
-                            height: 1.12,
+                            fontSize: 8,
+                            fontWeight: FontWeight.w800,
                           ),
                         ),
-                        const SizedBox(height: 3),
-                        Text(
-                          '${draw.drawDate} | ${draw.winners.length} numbers',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(color: Colors.white70, fontSize: 8),
+                      ),
+                    ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 24, 8, 5),
+                    child: Center(
+                      child: Text(
+                        draw.lotteryName,
+                        maxLines: 2,
+                        textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          height: 1.15,
                         ),
-                      ],
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
-            Container(
-              height: 25,
-              width: double.infinity,
-              color: Colors.white,
-              alignment: Alignment.center,
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+            Container(height: 1, color: const Color(0xFFF0F2F5)),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+              child: Row(
                 children: [
-                  Text(
-                    'VIEW NUMBERS',
-                    style: TextStyle(
-                      color: Color(0xFF344256),
-                      fontSize: 9,
-                      fontWeight: FontWeight.w700,
+                  Expanded(
+                    child: Text(
+                      draw.drawDate,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: _textDark,
+                        fontSize: 9,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
-                  SizedBox(width: 4),
-                  Icon(Icons.chevron_right, size: 13, color: _brandBlue),
+                  const SizedBox(width: 4),
+                  Flexible(
+                    child: Text(
+                      firstPrizeAmount == null
+                          ? '1st prize N/A'
+                          : _formatRupees(firstPrizeAmount),
+                      maxLines: 1,
+                      textAlign: TextAlign.right,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: _mintDeep,
+                        fontSize: 9,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _tileTag(String text) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-      decoration: BoxDecoration(
-        color: const Color(0x33FFFFFF),
-        borderRadius: BorderRadius.circular(3),
-      ),
-      child: Text(
-        text,
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 6,
-          fontWeight: FontWeight.w800,
         ),
       ),
     );
@@ -777,6 +848,52 @@ class _LotteryHomePageState extends State<LotteryHomePage> {
             style: const TextStyle(fontSize: 15, color: Color(0xFF4D5B6B)),
           ),
           const SizedBox(height: 16),
+          const Text(
+            'DRAW DATE',
+            style: TextStyle(
+              color: _deepBlue,
+              fontSize: 11,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          const SizedBox(height: 7),
+          InkWell(
+            onTap: _selectDrawDate,
+            borderRadius: BorderRadius.circular(8),
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: const Color(0xFFD8DEE7)),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.calendar_month_outlined,
+                      color: _brandBlue, size: 20),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      _selectedDrawDate == null
+                          ? 'Select draw date'
+                          : _displayDrawDate(_selectedDrawDate!),
+                      style: TextStyle(
+                        color: _selectedDrawDate == null
+                            ? _mutedText
+                            : _textDark,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  const Icon(Icons.edit_calendar_outlined,
+                      color: _mutedText, size: 18),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 14),
           SizedBox(
             width: double.infinity,
             child: FilledButton.icon(
@@ -787,8 +904,10 @@ class _LotteryHomePageState extends State<LotteryHomePage> {
                 backgroundColor: _brandBlue,
                 foregroundColor: Colors.white,
                 minimumSize: const Size.fromHeight(48),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-                textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(6)),
+                textStyle:
+                    const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
               ),
             ),
           ),
@@ -815,7 +934,8 @@ class _LotteryHomePageState extends State<LotteryHomePage> {
             textCapitalization: TextCapitalization.characters,
             decoration: InputDecoration(
               hintText: 'Enter ticket number',
-              prefixIcon: const Icon(Icons.confirmation_number_outlined, size: 20),
+              prefixIcon:
+                  const Icon(Icons.confirmation_number_outlined, size: 20),
               isDense: true,
               filled: true,
               fillColor: Colors.white,
@@ -840,7 +960,8 @@ class _LotteryHomePageState extends State<LotteryHomePage> {
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
                   : const Icon(Icons.search),
-              label: Text(_isCheckingTicket ? 'Checking ticket...' : 'Check ticket'),
+              label: Text(
+                  _isCheckingTicket ? 'Checking ticket...' : 'Check ticket'),
               style: FilledButton.styleFrom(
                 backgroundColor: _mintDeep,
                 foregroundColor: Colors.white,
@@ -873,8 +994,9 @@ class _LotteryHomePageState extends State<LotteryHomePage> {
                 SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'Ticket numbers are checked against published winning numbers. Confirm prize claims with the official Kerala State Lotteries publication.',
-                    style: TextStyle(fontSize: 11, height: 1.4, color: Color(0xFF52647A)),
+                    'Choose the ticket draw date before checking. Confirm prize claims with the official Kerala State Lotteries publication.',
+                    style: TextStyle(
+                        fontSize: 11, height: 1.4, color: Color(0xFF52647A)),
                   ),
                 ),
               ],
@@ -910,7 +1032,7 @@ class _LotteryHomePageState extends State<LotteryHomePage> {
           const SizedBox(height: 4),
           Text(
             prizeAmount == null
-              ? '${match.prizeTier} · prize amount not in published data'
+                ? '${match.prizeTier} · prize amount not in published data'
                 : '${_formatRupees(prizeAmount)} · ${match.prizeTier}',
             style: const TextStyle(
               color: _mintDeep,
@@ -953,17 +1075,21 @@ class _LotteryHomePageState extends State<LotteryHomePage> {
             const Text(
               'Predictions are not available',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: Color(0xFF26364B)),
+              style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF26364B)),
             ),
             const SizedBox(height: 7),
             const Text(
               'Lottery draws are random. Use official results to check your ticket.',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 13, height: 1.4, color: Color(0xFF78818D)),
+              style: TextStyle(
+                  fontSize: 13, height: 1.4, color: Color(0xFF78818D)),
             ),
             const SizedBox(height: 16),
             OutlinedButton.icon(
-              onPressed: () => setState(() => _selectedTab = 2),
+              onPressed: () => setState(() => _selectedTab = 1),
               icon: const Icon(Icons.qr_code_scanner),
               label: const Text('Check a ticket'),
             ),
@@ -983,12 +1109,15 @@ class _LotteryHomePageState extends State<LotteryHomePage> {
       children: const [
         Padding(
           padding: EdgeInsets.fromLTRB(28, 18, 16, 12),
-          child: Text('Ponkudam', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+          child: Text('Ponkudam',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
         ),
-        NavigationDrawerDestination(icon: Icon(Icons.home_outlined), label: Text('Home')),
-        NavigationDrawerDestination(icon: Icon(Icons.search), label: Text('Search')),
-        NavigationDrawerDestination(icon: Icon(Icons.qr_code_scanner), label: Text('Scan')),
-        NavigationDrawerDestination(icon: Icon(Icons.insights_outlined), label: Text('Prediction')),
+        NavigationDrawerDestination(
+            icon: Icon(Icons.home_outlined), label: Text('Home')),
+        NavigationDrawerDestination(
+            icon: Icon(Icons.qr_code_scanner), label: Text('Scan')),
+        NavigationDrawerDestination(
+            icon: Icon(Icons.insights_outlined), label: Text('Prediction')),
       ],
     );
   }
@@ -1004,17 +1133,196 @@ class _LotteryHomePageState extends State<LotteryHomePage> {
       ),
       child: Row(
         children: [
-          Icon(isError ? Icons.search_off : Icons.check_circle_outline, color: color, size: 19),
+          Icon(isError ? Icons.search_off : Icons.check_circle_outline,
+              color: color, size: 19),
           const SizedBox(width: 9),
           Expanded(
             child: Text(
               message,
-              style: TextStyle(fontSize: 12, height: 1.35, color: color, fontWeight: FontWeight.w600),
+              style: TextStyle(
+                  fontSize: 12,
+                  height: 1.35,
+                  color: color,
+                  fontWeight: FontWeight.w600),
             ),
           ),
         ],
       ),
     );
+  }
+}
+
+class LotteryResultPage extends StatelessWidget {
+  const LotteryResultPage({super.key, required this.draw});
+
+  final LotteryDraw draw;
+
+  @override
+  Widget build(BuildContext context) {
+    final prizeGroups = draw.winnersByPrizeTier.entries.toList();
+    return Scaffold(
+      backgroundColor: _pageBackground,
+      appBar: AppBar(
+        backgroundColor: _brandBlue,
+        foregroundColor: Colors.white,
+        title: Text(
+          draw.lotteryName,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
+        ),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(38),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(18, 0, 18, 10),
+            child: Row(
+              children: [
+                const Icon(Icons.calendar_today_outlined,
+                    size: 15, color: Colors.white70),
+                const SizedBox(width: 7),
+                Text(draw.drawDate,
+                    style: const TextStyle(color: Colors.white, fontSize: 13)),
+                const Spacer(),
+                const Icon(Icons.confirmation_number_outlined,
+                    size: 16, color: Colors.white70),
+                const SizedBox(width: 6),
+                Text(
+                  '${draw.winners.length} numbers',
+                  style: const TextStyle(color: Colors.white, fontSize: 12),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+      body: draw.winners.isEmpty
+          ? const Center(child: Text('No winning numbers saved for this draw.'))
+          : ListView.separated(
+              padding: const EdgeInsets.fromLTRB(12, 14, 12, 24),
+              itemCount: prizeGroups.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 12),
+              itemBuilder: (context, index) {
+                final group = prizeGroups[index];
+                return _PrizeSection(
+                  tier: group.key,
+                  winners: group.value,
+                );
+              },
+            ),
+    );
+  }
+}
+
+class _PrizeSection extends StatelessWidget {
+  const _PrizeSection({required this.tier, required this.winners});
+
+  final String tier;
+  final List<LotteryPrizeWinner> winners;
+
+  @override
+  Widget build(BuildContext context) {
+    final endingNumbers = winners.every(
+      (winner) => RegExp(r'^\d{4}$').hasMatch(winner.winningNumber),
+    );
+    final amount = winners.first.prizeAmount;
+
+    return Container(
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: const Color(0xFFDCE3E9)),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x12000000),
+            blurRadius: 6,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            color: _brandBlue,
+            child: Text(
+              tier.toLowerCase().startsWith('cons')
+                  ? 'Consolation Prize'
+                  : '$tier Prize',
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+            child: Text(
+              amount == null
+                  ? 'Prize amount unavailable'
+                  : '${_formatRupees(amount)}/-',
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Color(0xFF15212C),
+                fontSize: 17,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: winners.length,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: endingNumbers ? 4 : 2,
+              mainAxisExtent: 48,
+            ),
+            itemBuilder: (context, index) {
+              final winner = winners[index];
+              return Container(
+                alignment: Alignment.center,
+                decoration: const BoxDecoration(
+                  border: Border(
+                    top: BorderSide(color: Color(0xFFD4D7DA), width: 0.6),
+                    right: BorderSide(color: Color(0xFFD4D7DA), width: 0.6),
+                  ),
+                ),
+                child: Text(
+                  _formatWinningNumber(winner.winningNumber),
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: Color(0xFF17212C),
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  static String _formatWinningNumber(String number) {
+    final serial = RegExp(r'^([A-Z]{2})(\d{6})$').firstMatch(number);
+    return serial == null ? number : '${serial.group(1)} ${serial.group(2)}';
+  }
+
+  static String _formatRupees(int amount) {
+    final digits = amount.toString();
+    if (digits.length <= 3) return '₹ $digits';
+
+    var prefix = digits.substring(0, digits.length - 3);
+    var grouped = digits.substring(digits.length - 3);
+    while (prefix.length > 2) {
+      grouped = '${prefix.substring(prefix.length - 2)},$grouped';
+      prefix = prefix.substring(0, prefix.length - 2);
+    }
+    return '₹ $prefix,$grouped';
   }
 }
 
@@ -1046,7 +1354,8 @@ class _BarcodeScannerPageState extends State<BarcodeScannerPage> {
       appBar: AppBar(
         backgroundColor: const Color(0xFF101812),
         foregroundColor: Colors.white,
-        title: const Text('Scan ticket barcode', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
+        title: const Text('Scan ticket barcode',
+            style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
       ),
       body: Stack(
         fit: StackFit.expand,

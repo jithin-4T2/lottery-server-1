@@ -6,7 +6,7 @@ from pypdf import PdfReader
 
 _DRAW_HEADER = re.compile(
     r"(?P<name>[A-Z][A-Z '\-&]*?)\s+LOTTERY\s+NO\.\s*"
-    r"[A-Z]{2}-\d+(?:ST|ND|RD|TH)\s+DRAW\s+HELD\s+ON\s*:-?\s*"
+    r"(?P<code>[A-Z]{2}-\d+(?:ST|ND|RD|TH)?)\s+DRAW\s+HELD\s+ON\s*:-?\s*"
     r"(?P<date>\d{2}/\d{2}/\d{4})",
     re.IGNORECASE,
 )
@@ -62,8 +62,10 @@ def _parse_lottery_text(text: str) -> dict:
         raise ValueError("No winning numbers were found in the result PDF.")
 
     lottery_name = re.sub(r"^in\s+", "", draw.group("name").strip(), flags=re.IGNORECASE)
+    draw_code = re.sub(r"(?:ST|ND|RD|TH)$", "", draw.group("code"), flags=re.IGNORECASE)
     return {
         "lottery_name": lottery_name,
+        "draw_code": draw_code,
         "draw_date": datetime.strptime(draw.group("date"), "%d/%m/%Y").date().isoformat(),
         "winners": winners,
     }

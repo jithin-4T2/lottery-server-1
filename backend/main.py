@@ -19,6 +19,7 @@ def _download_and_store_latest_result() -> dict[str, Any]:
         draw_date=result.get("draw_date", "unknown"),
         source_url=result.get("source_url"),
         pdf_path=result.get("pdf_url"),
+        draw_code=result.get("draw_code"),
     )
 
     for prize in result.get("winners", []):
@@ -30,6 +31,7 @@ def _download_and_store_latest_result() -> dict[str, Any]:
     return {
         "draw_id": draw_id,
         "lottery_name": result.get("lottery_name", "Unknown"),
+        "draw_code": result.get("draw_code"),
         "draw_date": result.get("draw_date", "unknown"),
         "source_url": result.get("source_url"),
         "pdf_url": result.get("pdf_url"),
@@ -109,6 +111,7 @@ def import_draw_result(file: UploadFile = File(...)) -> dict:
         draw_date=result.get("draw_date", "unknown"),
         source_url=None,
         pdf_path=None,
+        draw_code=result.get("draw_code"),
     )
 
     for prize in result.get("winners", []):
@@ -121,6 +124,7 @@ def import_draw_result(file: UploadFile = File(...)) -> dict:
     return {
         "draw_id": draw_id,
         "lottery_name": result.get("lottery_name", "Unknown"),
+        "draw_code": result.get("draw_code"),
         "draw_date": result.get("draw_date", "unknown"),
         "stored_winners": sum(1 for prize in result.get("winners", []) for _ in prize.get("numbers", [])),
     }
@@ -149,9 +153,14 @@ def check_ticket(ticket: dict) -> dict:
     if not ticket_code:
         raise HTTPException(status_code=400, detail="ticket_code is required.")
 
-    matches = find_ticket_matches(ticket_code)
+    draw_date = str(ticket.get("draw_date", "")).strip()
+    if not draw_date:
+        raise HTTPException(status_code=400, detail="draw_date is required.")
+
+    matches = find_ticket_matches(ticket_code, draw_date)
     return {
         "ticket_code": ticket_code,
+        "draw_date": draw_date,
         "matches": matches,
         "found": bool(matches),
     }

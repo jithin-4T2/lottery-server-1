@@ -2,6 +2,7 @@
   {
     "id": 1,
     "lottery_name": "KARUNYA PLUS",
+    "draw_code": "KN-643",
     "draw_date": "2026-10-01",
     "source_url": "https://result.keralalotteries.com/",
     "pdf_path": "https://result.keralalotteries.com/viewlotisresult.php?drawserial=75396",

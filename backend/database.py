@@ -27,6 +27,7 @@ def init_db() -> None:
             CREATE TABLE IF NOT EXISTS draws (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 lottery_name TEXT NOT NULL,
+                draw_code TEXT,
                 draw_date TEXT NOT NULL,
                 source_url TEXT,
                 pdf_path TEXT,
@@ -34,6 +35,9 @@ def init_db() -> None:
             )
             """
         )
+        draw_columns = {row["name"] for row in conn.execute("PRAGMA table_info(draws)")}
+        if "draw_code" not in draw_columns:
+            conn.execute("ALTER TABLE draws ADD COLUMN draw_code TEXT")
         conn.execute(
             """
             CREATE TABLE IF NOT EXISTS prize_winners (
@@ -59,14 +63,20 @@ def normalize_number(value: str) -> str:
     return "".join(ch for ch in (value or "").upper() if ch.isalnum())
 
 
-def save_draw_result(lottery_name: str, draw_date: str, source_url: str | None = None, pdf_path: str | None = None) -> int:
+def save_draw_result(
+    lottery_name: str,
+    draw_date: str,
+    source_url: str | None = None,
+    pdf_path: str | None = None,
+    draw_code: str | None = None,
+) -> int:
     with get_connection() as conn:
         cursor = conn.execute(
             """
-            INSERT INTO draws (lottery_name, draw_date, source_url, pdf_path)
-            VALUES (?, ?, ?, ?)
+            INSERT INTO draws (lottery_name, draw_code, draw_date, source_url, pdf_path)
+            VALUES (?, ?, ?, ?, ?)
             """,
-            (lottery_name, draw_date, source_url, pdf_path),
+            (lottery_name, draw_code, draw_date, source_url, pdf_path),
         )
         return int(cursor.lastrowid)
 
@@ -91,7 +101,7 @@ def list_latest_draws(limit: int = 10) -> list[dict]:
     with get_connection() as conn:
         rows = conn.execute(
             """
-            SELECT id, lottery_name, draw_date, source_url, pdf_path
+                SELECT id, lottery_name, draw_code, draw_date, source_url, pdf_path
             FROM draws
             ORDER BY draw_date DESC, id DESC
             LIMIT ?
@@ -113,6 +123,7 @@ def list_latest_draws(limit: int = 10) -> list[dict]:
                 {
                     "id": row["id"],
                     "lottery_name": row["lottery_name"],
+                    "draw_code": row["draw_code"],
                     "draw_date": row["draw_date"],
                     "source_url": row["source_url"],
                     "pdf_path": row["pdf_path"],
@@ -129,7 +140,7 @@ def list_latest_draws(limit: int = 10) -> list[dict]:
         return results
 
 
-def find_ticket_matches(ticket_code: str) -> list[dict]:
+def find_ticket_matches(ticket_code: str, draw_date: str | None = None) -> list[dict]:
     normalized = normalize_number(ticket_code)
     if len(normalized) < 4:
         return []
@@ -141,12 +152,15 @@ def find_ticket_matches(ticket_code: str) -> list[dict]:
                      pw.winning_number, pw.prize_amount
             FROM prize_winners pw
             JOIN draws d ON d.id = pw.draw_id
-                WHERE pw.winning_number = ?
-                    OR (length(pw.winning_number) = 8 AND pw.winning_number LIKE ?)
-                    OR (length(pw.winning_number) = 4 AND pw.winning_number = substr(?, -4))
+                        WHERE (? IS NULL OR d.draw_date = ?)
+                            AND (
+                                     pw.winning_number = ?
+                                     OR (length(pw.winning_number) = 8 AND pw.winning_number LIKE ?)
+                                     OR (length(pw.winning_number) = 4 AND pw.winning_number = substr(?, -4))
+                            )
             ORDER BY d.draw_date DESC, d.id DESC
             """,
-            (normalized, f"%{normalized}", normalized),
+            (draw_date, draw_date, normalized, f"%{normalized}", normalized),
         ).fetchall()
         return [
             {

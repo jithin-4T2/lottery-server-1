@@ -27,7 +27,8 @@
       "program": "${workspaceFolder}/frontend/lib/main.dart",
       "cwd": "${workspaceFolder}/frontend",
       "toolArgs": [
-        "--dart-define=API_BASE_URL=http://10.0.2.2:8000"
+        "--dart-define=API_BASE_URL=http://10.0.2.2:8000",
+        "--dart-define=RESULTS_JSON_URL=https://raw.githubusercontent.com/jithin-4T2/lottery-server-1/main/frontend/web/results.json"
       ]
     },
     {
@@ -37,7 +38,8 @@
       "program": "${workspaceFolder}/frontend/lib/main.dart",
       "cwd": "${workspaceFolder}/frontend",
       "toolArgs": [
-        "--dart-define=API_BASE_URL=http://127.0.0.1:8000"
+        "--dart-define=API_BASE_URL=http://127.0.0.1:8000",
+        "--dart-define=RESULTS_JSON_URL=https://raw.githubusercontent.com/jithin-4T2/lottery-server-1/main/frontend/web/results.json"
       ]
     }
   ],

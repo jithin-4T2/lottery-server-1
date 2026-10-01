@@ -4,10 +4,13 @@ import 'package:file_picker/file_picker.dart';
 import 'package:http/http.dart' as http;
 
 bool resultContainsTicketCode(String ticketCode, String resultText) {
-  final normalizedCode = ticketCode.toUpperCase().replaceAll(RegExp(r'[^A-Z0-9]'), '');
-  final normalizedResults = resultText.toUpperCase().replaceAll(RegExp(r'[^A-Z0-9]'), '');
+  final normalizedCode =
+      ticketCode.toUpperCase().replaceAll(RegExp(r'[^A-Z0-9]'), '');
+  final normalizedResults =
+      resultText.toUpperCase().replaceAll(RegExp(r'[^A-Z0-9]'), '');
 
-  return normalizedCode.length >= 6 && normalizedResults.contains(normalizedCode);
+  return normalizedCode.length >= 6 &&
+      normalizedResults.contains(normalizedCode);
 }
 
 class LotteryTicketMatch {
@@ -60,22 +63,41 @@ class LotteryDraw {
   const LotteryDraw({
     required this.id,
     required this.lotteryName,
+    required this.drawCode,
     required this.drawDate,
     required this.winners,
   });
 
   final int id;
   final String lotteryName;
+  final String? drawCode;
   final String drawDate;
   final List<LotteryPrizeWinner> winners;
+
+  LotteryPrizeWinner? get firstPrize {
+    for (final winner in winners) {
+      if (winner.prizeTier.toLowerCase() == '1st') return winner;
+    }
+    return null;
+  }
+
+  Map<String, List<LotteryPrizeWinner>> get winnersByPrizeTier {
+    final groups = <String, List<LotteryPrizeWinner>>{};
+    for (final winner in winners) {
+      groups.putIfAbsent(winner.prizeTier, () => []).add(winner);
+    }
+    return groups;
+  }
 
   factory LotteryDraw.fromJson(Map<String, dynamic> json) {
     return LotteryDraw(
       id: (json['id'] as num?)?.toInt() ?? 0,
       lotteryName: json['lottery_name'] as String? ?? 'Unknown lottery',
+      drawCode: json['draw_code'] as String?,
       drawDate: json['draw_date'] as String? ?? '',
       winners: (json['winners'] as List<dynamic>? ?? const [])
-          .map((winner) => LotteryPrizeWinner.fromJson(winner as Map<String, dynamic>))
+          .map((winner) =>
+              LotteryPrizeWinner.fromJson(winner as Map<String, dynamic>))
           .toList(),
     );
   }
@@ -88,18 +110,26 @@ class LotteryService {
   LotteryService({String? baseUrl, String? resultsJsonUrl, http.Client? client})
       : _client = client ?? http.Client(),
         baseUrl = _normalizeUrl(
-          baseUrl ?? const String.fromEnvironment('API_BASE_URL', defaultValue: ''),
+          baseUrl ??
+              const String.fromEnvironment('API_BASE_URL', defaultValue: ''),
         ),
         resultsJsonUrl = _resolveResultsJsonUrl(
           resultsJsonUrl,
-          baseUrl ?? const String.fromEnvironment('API_BASE_URL', defaultValue: ''),
+          baseUrl ??
+              const String.fromEnvironment('API_BASE_URL', defaultValue: ''),
         );
 
-  static String _normalizeUrl(String value) => value.trim().replaceAll(RegExp(r'/$'), '');
+  static String _normalizeUrl(String value) =>
+      value.trim().replaceAll(RegExp(r'/$'), '');
 
-  static String _resolveResultsJsonUrl(String? resultsJsonUrl, String? baseUrl) {
-    final explicitResults = (resultsJsonUrl ?? const String.fromEnvironment('RESULTS_JSON_URL', defaultValue: '')).trim();
-    final explicitBaseUrl = (baseUrl ?? const String.fromEnvironment('API_BASE_URL', defaultValue: '')).trim();
+  static String _resolveResultsJsonUrl(
+      String? resultsJsonUrl, String? baseUrl) {
+    final explicitResults = (resultsJsonUrl ??
+            const String.fromEnvironment('RESULTS_JSON_URL', defaultValue: ''))
+        .trim();
+    final explicitBaseUrl = (baseUrl ??
+            const String.fromEnvironment('API_BASE_URL', defaultValue: ''))
+        .trim();
 
     if (explicitResults.isNotEmpty) {
       return explicitResults;
@@ -119,7 +149,9 @@ class LotteryService {
   bool get usesPublishedResults => resultsJsonUrl.isNotEmpty;
 
   Future<List<LotteryDraw>> getResults() async {
-    final uri = usesPublishedResults ? Uri.parse(resultsJsonUrl) : Uri.parse('$baseUrl/results');
+    final uri = usesPublishedResults
+        ? Uri.parse(resultsJsonUrl)
+        : Uri.parse('$baseUrl/results');
     final response = await _client.get(uri).timeout(
           const Duration(seconds: 20),
         );
@@ -136,12 +168,14 @@ class LotteryService {
   Future<void> fetchLatestResult() async {
     if (usesPublishedResults) return;
 
-    final response = await _client.post(Uri.parse('$baseUrl/results/fetch-latest')).timeout(
-          const Duration(seconds: 120),
-        );
+    final response =
+        await _client.post(Uri.parse('$baseUrl/results/fetch-latest')).timeout(
+              const Duration(seconds: 120),
+            );
     if (response.statusCode != 200) {
       final body = jsonDecode(response.body) as Map<String, dynamic>;
-      throw Exception(body['detail'] ?? 'The latest result could not be fetched.');
+      throw Exception(
+          body['detail'] ?? 'The latest result could not be fetched.');
     }
   }
 
@@ -163,21 +197,26 @@ class LotteryService {
       );
 
     final streamedResponse = await request.send().timeout(
-      const Duration(seconds: 90),
-    );
+          const Duration(seconds: 90),
+        );
     final response = await http.Response.fromStream(streamedResponse);
     final body = jsonDecode(response.body) as Map<String, dynamic>;
 
     if (response.statusCode != 200) {
-      throw Exception(body['detail'] ?? 'The server could not process this PDF.');
+      throw Exception(
+          body['detail'] ?? 'The server could not process this PDF.');
     }
 
     return const JsonEncoder.withIndent('  ').convert(body);
   }
 
-  Future<List<LotteryTicketMatch>> checkTicket(String ticketCode) async {
+  Future<List<LotteryTicketMatch>> checkTicket(
+    String ticketCode, {
+    required String drawDate,
+  }) async {
     if (usesPublishedResults) {
-      final normalizedCode = ticketCode.toUpperCase().replaceAll(RegExp(r'[^A-Z0-9]'), '');
+      final normalizedCode =
+          ticketCode.toUpperCase().replaceAll(RegExp(r'[^A-Z0-9]'), '');
       if (normalizedCode.length < 4) {
         throw Exception('Enter at least the last four digits of your ticket.');
       }
@@ -185,6 +224,7 @@ class LotteryService {
       final draws = await getResults();
       return [
         for (final draw in draws)
+          if (draw.drawDate == drawDate)
           for (final winner in draw.winners)
             if (_ticketMatchesNumber(normalizedCode, winner.winningNumber))
               LotteryTicketMatch(
@@ -197,11 +237,16 @@ class LotteryService {
       ];
     }
 
-    final response = await _client.post(
-      Uri.parse('$baseUrl/check-ticket'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'ticket_code': ticketCode}),
-    ).timeout(const Duration(seconds: 30));
+    final response = await _client
+        .post(
+          Uri.parse('$baseUrl/check-ticket'),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({
+            'ticket_code': ticketCode,
+            'draw_date': drawDate,
+          }),
+        )
+        .timeout(const Duration(seconds: 30));
 
     final body = jsonDecode(response.body) as Map<String, dynamic>;
     if (response.statusCode != 200) {
@@ -209,14 +254,17 @@ class LotteryService {
     }
 
     final matches = (body['matches'] as List<dynamic>? ?? const [])
-        .map((entry) => LotteryTicketMatch.fromJson(entry as Map<String, dynamic>))
+        .map((entry) =>
+            LotteryTicketMatch.fromJson(entry as Map<String, dynamic>))
         .toList();
     return matches;
   }
 
   static bool _ticketMatchesNumber(String ticketCode, String winningNumber) {
     if (winningNumber == ticketCode) return true;
-    if (winningNumber.length == 8 && winningNumber.endsWith(ticketCode)) return true;
+    if (winningNumber.length == 8 && winningNumber.endsWith(ticketCode)) {
+      return true;
+    }
     return winningNumber.length == 4 && ticketCode.endsWith(winningNumber);
   }
 }

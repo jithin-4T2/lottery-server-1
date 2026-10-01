@@ -33,6 +33,22 @@ def _find_latest_result_url(html: str, source_url: str) -> str | None:
     return urljoin(source_url, parser.result_links[0])
 
 
+def _parse_result_pdf(pdf_url: str) -> dict[str, Any]:
+    pdf_response = requests.get(
+        pdf_url,
+        timeout=60,
+        headers={"User-Agent": "Mozilla/5.0"},
+    )
+    pdf_response.raise_for_status()
+    if not pdf_response.content.startswith(b"%PDF"):
+        raise ValueError(f"Downloaded content from {pdf_url} is not a PDF.")
+    return extract_lottery_results(pdf_response.content)
+
+
+def download_draw_code(pdf_url: str) -> str | None:
+    return _parse_result_pdf(pdf_url).get("draw_code")
+
+
 def download_latest_result() -> dict[str, Any]:
     source_url = os.getenv("KERALA_LOTTERY_SOURCE_URL", DEFAULT_SOURCE_URL)
     response = requests.get(
@@ -46,14 +62,10 @@ def download_latest_result() -> dict[str, Any]:
     if not pdf_url:
         raise ValueError(f"No draw-result link found on {source_url}.")
 
-    pdf_response = requests.get(pdf_url, timeout=60, headers={"User-Agent": "Mozilla/5.0"})
-    pdf_response.raise_for_status()
-    if not pdf_response.content.startswith(b"%PDF"):
-        raise ValueError(f"Downloaded content from {pdf_url} is not a PDF.")
-
-    result = extract_lottery_results(pdf_response.content)
+    result = _parse_result_pdf(pdf_url)
     return {
         "lottery_name": result.get("lottery_name", "Unknown"),
+        "draw_code": result.get("draw_code"),
         "draw_date": result.get("draw_date", "unknown"),
         "source_url": source_url,
         "pdf_url": pdf_url,
