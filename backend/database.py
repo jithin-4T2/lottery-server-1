@@ -1,13 +1,23 @@
 import sqlite3
+from contextlib import contextmanager
+from collections.abc import Iterator
 from pathlib import Path
 
 DB_PATH = Path(__file__).with_name("lottery_results.db")
 
 
-def get_connection() -> sqlite3.Connection:
+@contextmanager
+def get_connection() -> Iterator[sqlite3.Connection]:
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
-    return conn
+    try:
+        yield conn
+        conn.commit()
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
 
 
 def init_db() -> None:
@@ -31,11 +41,15 @@ def init_db() -> None:
                 draw_id INTEGER NOT NULL,
                 prize_tier TEXT NOT NULL,
                 winning_number TEXT NOT NULL,
+                prize_amount INTEGER,
                 created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (draw_id) REFERENCES draws(id)
             )
             """
         )
+        winner_columns = {row["name"] for row in conn.execute("PRAGMA table_info(prize_winners)")}
+        if "prize_amount" not in winner_columns:
+            conn.execute("ALTER TABLE prize_winners ADD COLUMN prize_amount INTEGER")
         conn.execute(
             "CREATE INDEX IF NOT EXISTS idx_prize_winners_number ON prize_winners(winning_number)"
         )
@@ -57,14 +71,19 @@ def save_draw_result(lottery_name: str, draw_date: str, source_url: str | None =
         return int(cursor.lastrowid)
 
 
-def save_winner(draw_id: int, prize_tier: str, winning_number: str) -> None:
+def save_winner(
+    draw_id: int,
+    prize_tier: str,
+    winning_number: str,
+    prize_amount: int | None = None,
+) -> None:
     with get_connection() as conn:
         conn.execute(
             """
-            INSERT INTO prize_winners (draw_id, prize_tier, winning_number)
-            VALUES (?, ?, ?)
+            INSERT INTO prize_winners (draw_id, prize_tier, winning_number, prize_amount)
+            VALUES (?, ?, ?, ?)
             """,
-            (draw_id, prize_tier, normalize_number(winning_number)),
+            (draw_id, prize_tier, normalize_number(winning_number), prize_amount),
         )
 
 
@@ -83,7 +102,7 @@ def list_latest_draws(limit: int = 10) -> list[dict]:
         for row in rows:
             winners = conn.execute(
                 """
-                SELECT prize_tier, winning_number
+                SELECT prize_tier, winning_number, prize_amount
                 FROM prize_winners
                 WHERE draw_id = ?
                 ORDER BY id ASC
@@ -98,7 +117,11 @@ def list_latest_draws(limit: int = 10) -> list[dict]:
                     "source_url": row["source_url"],
                     "pdf_path": row["pdf_path"],
                     "winners": [
-                        {"prize_tier": item["prize_tier"], "winning_number": item["winning_number"]}
+                        {
+                            "prize_tier": item["prize_tier"],
+                            "winning_number": item["winning_number"],
+                            "prize_amount": item["prize_amount"],
+                        }
                         for item in winners
                     ],
                 }
@@ -108,19 +131,22 @@ def list_latest_draws(limit: int = 10) -> list[dict]:
 
 def find_ticket_matches(ticket_code: str) -> list[dict]:
     normalized = normalize_number(ticket_code)
-    if not normalized:
+    if len(normalized) < 4:
         return []
 
     with get_connection() as conn:
         rows = conn.execute(
             """
-            SELECT d.id, d.lottery_name, d.draw_date, pw.prize_tier, pw.winning_number
+                 SELECT d.id, d.lottery_name, d.draw_date, pw.prize_tier,
+                     pw.winning_number, pw.prize_amount
             FROM prize_winners pw
             JOIN draws d ON d.id = pw.draw_id
-            WHERE pw.winning_number LIKE ?
+                WHERE pw.winning_number = ?
+                    OR (length(pw.winning_number) = 8 AND pw.winning_number LIKE ?)
+                    OR (length(pw.winning_number) = 4 AND pw.winning_number = substr(?, -4))
             ORDER BY d.draw_date DESC, d.id DESC
             """,
-            (f"%{normalized}%",),
+            (normalized, f"%{normalized}", normalized),
         ).fetchall()
         return [
             {
@@ -129,6 +155,7 @@ def find_ticket_matches(ticket_code: str) -> list[dict]:
                 "draw_date": row["draw_date"],
                 "prize_tier": row["prize_tier"],
                 "winning_number": row["winning_number"],
+                "prize_amount": row["prize_amount"],
             }
             for row in rows
         ]

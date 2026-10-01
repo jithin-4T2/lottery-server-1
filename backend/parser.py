@@ -12,7 +12,7 @@ _DRAW_HEADER = re.compile(
 )
 _PRIZE_HEADER = re.compile(
     r"(?P<tier>\d+(?:ST|ND|RD|TH)|CONS(?:OLATION)?)\s*"
-    r"PRIZE\s*-?\s*RS\s*:?\s*[\d,]+\s*/-?",
+    r"PRIZE\s*-?\s*RS\s*:?\s*(?P<amount>[\d,]+)\s*/-?",
     re.IGNORECASE,
 )
 _SERIAL_NUMBER = re.compile(r"\b[A-Z]{2}\s+\d{6}\b", re.IGNORECASE)
@@ -50,7 +50,13 @@ def _parse_lottery_text(text: str) -> dict:
             numbers = _ENDING_NUMBER.findall(section)
 
         if numbers:
-            winners.append({"prize_tier": prize_tier, "numbers": numbers})
+            winners.append(
+                {
+                    "prize_tier": prize_tier,
+                    "prize_amount": int(header.group("amount").replace(",", "")),
+                    "numbers": numbers,
+                }
+            )
 
     if not winners:
         raise ValueError("No winning numbers were found in the result PDF.")

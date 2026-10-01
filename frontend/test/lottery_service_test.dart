@@ -24,7 +24,7 @@ void main() {
       'lottery_name': 'KARUNYA PLUS',
       'draw_date': '2026-09-28',
       'winners': [
-        {'prize_tier': '1st', 'winning_number': '123456'},
+        {'prize_tier': '1st', 'prize_amount': 10000000, 'winning_number': '123456'},
       ],
     });
 
@@ -32,6 +32,15 @@ void main() {
     expect(draw.drawDate, '2026-09-28');
     expect(draw.winners.single.prizeTier, '1st');
     expect(draw.winners.single.winningNumber, '123456');
+    expect(draw.winners.single.prizeAmount, 10000000);
+  });
+
+  test('defaults to the published results feed when no runtime config is provided', () {
+    final service = LotteryService();
+
+    expect(service.usesPublishedResults, isTrue);
+    expect(service.resultsJsonUrl, contains('raw.githubusercontent.com'));
+    expect(service.baseUrl, isNot(contains('127.0.0.1')));
   });
 
   test('loads published results and checks tickets without the API', () async {
@@ -46,7 +55,7 @@ void main() {
               'lottery_name': 'KARUNYA PLUS',
               'draw_date': '2026-10-01',
               'winners': [
-                {'prize_tier': '1st', 'winning_number': 'PH901174'},
+                {'prize_tier': '1st', 'prize_amount': 10000000, 'winning_number': 'PH901174'},
               ],
             },
           ]),
@@ -61,5 +70,6 @@ void main() {
     expect(service.usesPublishedResults, isTrue);
     expect(draws.single.lotteryName, 'KARUNYA PLUS');
     expect(matches.single.prizeTier, '1st');
+    expect(matches.single.prizeAmount, 10000000);
   });
 }

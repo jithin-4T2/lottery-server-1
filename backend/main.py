@@ -25,7 +25,7 @@ def _download_and_store_latest_result() -> dict[str, Any]:
         tier = prize.get("prize_tier", "Unknown")
         for number in prize.get("numbers", []):
             if number:
-                save_winner(draw_id, tier, str(number))
+                save_winner(draw_id, tier, str(number), prize.get("prize_amount"))
 
     return {
         "draw_id": draw_id,
@@ -116,7 +116,7 @@ def import_draw_result(file: UploadFile = File(...)) -> dict:
         numbers = prize.get("numbers", [])
         for number in numbers:
             if number:
-                save_winner(draw_id, tier, str(number))
+                save_winner(draw_id, tier, str(number), prize.get("prize_amount"))
 
     return {
         "draw_id": draw_id,

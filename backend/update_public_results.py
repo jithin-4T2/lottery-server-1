@@ -30,6 +30,7 @@ def merge_results(
     winners = [
         {
             "prize_tier": str(prize.get("prize_tier", "Unknown")),
+            "prize_amount": prize.get("prize_amount"),
             "winning_number": "".join(
                 character
                 for character in str(number).upper()

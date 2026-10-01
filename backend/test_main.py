@@ -1,5 +1,10 @@
+import sqlite3
+import tempfile
 import unittest
+from pathlib import Path
+from unittest import mock
 
+from database import find_ticket_matches, init_db, list_latest_draws, save_draw_result, save_winner
 from parser import _parse_lottery_text
 from result_fetcher import _find_latest_result_url
 from update_public_results import merge_results
@@ -43,10 +48,26 @@ class LotteryTextParserTests(unittest.TestCase):
 
         self.assertEqual(result["lottery_name"], "BHAGYATHARA")
         self.assertEqual(result["draw_date"], "2026-09-28")
-        self.assertEqual(result["winners"][0], {"prize_tier": "1st", "numbers": ["BB 814615"]})
-        self.assertEqual(result["winners"][1], {"prize_tier": "Consolation", "numbers": ["BA 814615", "BC 814615"]})
-        self.assertEqual(result["winners"][4], {"prize_tier": "4th", "numbers": ["0026", "0817", "0855"]})
-        self.assertEqual(result["winners"][5], {"prize_tier": "5th", "numbers": ["1460", "3507"]})
+        self.assertEqual(
+            result["winners"][0],
+            {"prize_tier": "1st", "prize_amount": 10000000, "numbers": ["BB 814615"]},
+        )
+        self.assertEqual(
+            result["winners"][1],
+            {
+                "prize_tier": "Consolation",
+                "prize_amount": 5000,
+                "numbers": ["BA 814615", "BC 814615"],
+            },
+        )
+        self.assertEqual(result["winners"][0]["prize_amount"], 10000000)
+        self.assertEqual(result["winners"][4]["prize_tier"], "4th")
+        self.assertEqual(result["winners"][4]["prize_amount"], 5000)
+        self.assertEqual(result["winners"][4]["numbers"], ["0026", "0817", "0855"])
+        self.assertEqual(
+            result["winners"][5],
+            {"prize_tier": "5th", "prize_amount": 2000, "numbers": ["1460", "3507"]},
+        )
 
 
 class PublicResultsTests(unittest.TestCase):
@@ -64,14 +85,56 @@ class PublicResultsTests(unittest.TestCase):
             "draw_date": "2026-10-01",
             "source_url": "https://example.com/",
             "pdf_url": "https://example.com/result.pdf",
-            "winners": [{"prize_tier": "1st", "numbers": ["PH 901174"]}],
+            "winners": [{"prize_tier": "1st", "prize_amount": 10000000, "numbers": ["PH 901174"]}],
         }
 
         draws = merge_results(existing, latest)
 
         self.assertEqual(len(draws), 1)
         self.assertEqual(draws[0]["id"], 1)
-        self.assertEqual(draws[0]["winners"], [{"prize_tier": "1st", "winning_number": "PH901174"}])
+        self.assertEqual(
+            draws[0]["winners"],
+            [{"prize_tier": "1st", "prize_amount": 10000000, "winning_number": "PH901174"}],
+        )
+
+    def test_existing_database_stores_prize_amounts_and_matches_ticket_suffix(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            database_path = Path(temp_dir) / "results.db"
+            connection = sqlite3.connect(database_path)
+            try:
+                connection.executescript(
+                    """
+                    CREATE TABLE draws (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        lottery_name TEXT NOT NULL,
+                        draw_date TEXT NOT NULL,
+                        source_url TEXT,
+                        pdf_path TEXT,
+                        created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+                    );
+                    CREATE TABLE prize_winners (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        draw_id INTEGER NOT NULL,
+                        prize_tier TEXT NOT NULL,
+                        winning_number TEXT NOT NULL,
+                        created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+                    );
+                    """
+                )
+            finally:
+                connection.close()
+
+            with mock.patch("database.DB_PATH", database_path):
+                init_db()
+                draw_id = save_draw_result("KARUNYA PLUS", "2026-10-01")
+                save_winner(draw_id, "1st", "PH 901174", 10000000)
+
+                draws = list_latest_draws(limit=1)
+                matches = find_ticket_matches("901174")
+
+            self.assertEqual(draws[0]["winners"][0]["prize_amount"], 10000000)
+            self.assertEqual(matches[0]["winning_number"], "PH901174")
+            self.assertEqual(matches[0]["prize_amount"], 10000000)
 
 
 if __name__ == "__main__":

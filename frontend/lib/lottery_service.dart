@@ -15,12 +15,14 @@ class LotteryTicketMatch {
     required this.lotteryName,
     required this.drawDate,
     required this.prizeTier,
+    required this.prizeAmount,
     required this.winningNumber,
   });
 
   final String lotteryName;
   final String drawDate;
   final String prizeTier;
+  final int? prizeAmount;
   final String winningNumber;
 
   factory LotteryTicketMatch.fromJson(Map<String, dynamic> json) {
@@ -28,20 +30,27 @@ class LotteryTicketMatch {
       lotteryName: json['lottery_name'] as String? ?? 'Unknown',
       drawDate: json['draw_date'] as String? ?? '',
       prizeTier: json['prize_tier'] as String? ?? 'Unknown',
+      prizeAmount: (json['prize_amount'] as num?)?.toInt(),
       winningNumber: json['winning_number'] as String? ?? '',
     );
   }
 }
 
 class LotteryPrizeWinner {
-  const LotteryPrizeWinner({required this.prizeTier, required this.winningNumber});
+  const LotteryPrizeWinner({
+    required this.prizeTier,
+    required this.prizeAmount,
+    required this.winningNumber,
+  });
 
   final String prizeTier;
+  final int? prizeAmount;
   final String winningNumber;
 
   factory LotteryPrizeWinner.fromJson(Map<String, dynamic> json) {
     return LotteryPrizeWinner(
       prizeTier: json['prize_tier'] as String? ?? 'Unknown',
+      prizeAmount: (json['prize_amount'] as num?)?.toInt(),
       winningNumber: json['winning_number'] as String? ?? '',
     );
   }
@@ -72,14 +81,36 @@ class LotteryDraw {
   }
 }
 
+const _defaultPublishedResultsUrl =
+    'https://raw.githubusercontent.com/jithin-4T2/lottery-server-1/main/frontend/web/results.json';
+
 class LotteryService {
   LotteryService({String? baseUrl, String? resultsJsonUrl, http.Client? client})
       : _client = client ?? http.Client(),
-        baseUrl = (baseUrl ?? const String.fromEnvironment(
-          'API_BASE_URL',
-          defaultValue: 'http://127.0.0.1:8000',
-        )).replaceAll(RegExp(r'/$'), ''),
-        resultsJsonUrl = (resultsJsonUrl ?? const String.fromEnvironment('RESULTS_JSON_URL')).trim();
+        baseUrl = _normalizeUrl(
+          baseUrl ?? const String.fromEnvironment('API_BASE_URL', defaultValue: ''),
+        ),
+        resultsJsonUrl = _resolveResultsJsonUrl(
+          resultsJsonUrl,
+          baseUrl ?? const String.fromEnvironment('API_BASE_URL', defaultValue: ''),
+        );
+
+  static String _normalizeUrl(String value) => value.trim().replaceAll(RegExp(r'/$'), '');
+
+  static String _resolveResultsJsonUrl(String? resultsJsonUrl, String? baseUrl) {
+    final explicitResults = (resultsJsonUrl ?? const String.fromEnvironment('RESULTS_JSON_URL', defaultValue: '')).trim();
+    final explicitBaseUrl = (baseUrl ?? const String.fromEnvironment('API_BASE_URL', defaultValue: '')).trim();
+
+    if (explicitResults.isNotEmpty) {
+      return explicitResults;
+    }
+
+    if (explicitBaseUrl.isEmpty) {
+      return _defaultPublishedResultsUrl;
+    }
+
+    return '';
+  }
 
   final http.Client _client;
   final String baseUrl;
@@ -147,19 +178,20 @@ class LotteryService {
   Future<List<LotteryTicketMatch>> checkTicket(String ticketCode) async {
     if (usesPublishedResults) {
       final normalizedCode = ticketCode.toUpperCase().replaceAll(RegExp(r'[^A-Z0-9]'), '');
-      if (normalizedCode.isEmpty) {
-        throw Exception('Enter a ticket number.');
+      if (normalizedCode.length < 4) {
+        throw Exception('Enter at least the last four digits of your ticket.');
       }
 
       final draws = await getResults();
       return [
         for (final draw in draws)
           for (final winner in draw.winners)
-            if (winner.winningNumber.contains(normalizedCode))
+            if (_ticketMatchesNumber(normalizedCode, winner.winningNumber))
               LotteryTicketMatch(
                 lotteryName: draw.lotteryName,
                 drawDate: draw.drawDate,
                 prizeTier: winner.prizeTier,
+                prizeAmount: winner.prizeAmount,
                 winningNumber: winner.winningNumber,
               ),
       ];
@@ -180,5 +212,11 @@ class LotteryService {
         .map((entry) => LotteryTicketMatch.fromJson(entry as Map<String, dynamic>))
         .toList();
     return matches;
+  }
+
+  static bool _ticketMatchesNumber(String ticketCode, String winningNumber) {
+    if (winningNumber == ticketCode) return true;
+    if (winningNumber.length == 8 && winningNumber.endsWith(ticketCode)) return true;
+    return winningNumber.length == 4 && ticketCode.endsWith(winningNumber);
   }
 }
