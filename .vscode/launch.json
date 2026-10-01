@@ -1,0 +1,54 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    
+    
+    {
+      "name": "FastAPI: backend",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": [
+        "main:app",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "8000"
+      ],
+      "cwd": "${workspaceFolder}/backend",
+      "python": "${workspaceFolder}/backend/venv/Scripts/python.exe",
+      "envFile": "${workspaceFolder}/backend/.env",
+      "justMyCode": true
+    },
+    {
+      "name": "Flutter: Android emulator",
+      "type": "dart",
+      "request": "launch",
+      "program": "${workspaceFolder}/frontend/lib/main.dart",
+      "cwd": "${workspaceFolder}/frontend",
+      "toolArgs": [
+        "--dart-define=API_BASE_URL=http://10.0.2.2:8000"
+      ]
+    },
+    {
+      "name": "Flutter: desktop or web",
+      "type": "dart",
+      "request": "launch",
+      "program": "${workspaceFolder}/frontend/lib/main.dart",
+      "cwd": "${workspaceFolder}/frontend",
+      "toolArgs": [
+        "--dart-define=API_BASE_URL=http://127.0.0.1:8000"
+      ]
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Flutter + FastAPI: Android emulator",
+      "configurations": [
+        "FastAPI: backend",
+        "Flutter: Android emulator"
+      ],
+      "stopAll": true
+    }
+  ]
+}

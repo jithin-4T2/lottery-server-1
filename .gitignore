@@ -1,0 +1,16 @@
+backend/.env
+backend/venv/
+backend/__pycache__/
+backend/*.py[cod]
+backend/lottery_results.db
+backend/lottery_results.db-shm
+backend/lottery_results.db-wal
+frontend/.dart_tool/
+frontend/.flutter-plugins
+frontend/.flutter-plugins-dependencies
+frontend/build/
+frontend/.packages
+frontend/android/local.properties
+frontend/android/.gradle/
+*.iml
+.DS_Store

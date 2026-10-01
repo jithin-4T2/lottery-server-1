@@ -1,0 +1,44 @@
+name: Update lottery results
+
+on:
+  schedule:
+    - cron: '5 15 * * *'
+      timezone: Asia/Kolkata
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-lottery-results
+  cancel-in-progress: false
+
+jobs:
+  update-results:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install backend dependencies
+        run: python -m pip install -r backend/requirements.txt
+
+      - name: Download and parse latest draw
+        run: python backend/update_public_results.py
+
+      - name: Publish updated results
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add frontend/web/results.json
+          if git diff --cached --quiet; then
+            echo "No new draw to publish."
+          else
+            git commit -m "Update lottery results"
+            git push
+          fi
