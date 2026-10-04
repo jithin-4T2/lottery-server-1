@@ -1,5 +1,1925 @@
 [
   {
+    "id": 3,
+    "lottery_name": "SAMRUDHI",
+    "draw_code": "SM-75",
+    "draw_date": "2026-10-04",
+    "source_url": "https://result.keralalotteries.com/",
+    "pdf_path": "https://result.keralalotteries.com/viewlotisresult.php?drawserial=75398",
+    "winners": [
+      {
+        "prize_tier": "1st",
+        "prize_amount": 10000000,
+        "winning_number": "MH980055"
+      },
+      {
+        "prize_tier": "Consolation",
+        "prize_amount": 5000,
+        "winning_number": "MA980055"
+      },
+      {
+        "prize_tier": "Consolation",
+        "prize_amount": 5000,
+        "winning_number": "MB980055"
+      },
+      {
+        "prize_tier": "Consolation",
+        "prize_amount": 5000,
+        "winning_number": "MC980055"
+      },
+      {
+        "prize_tier": "Consolation",
+        "prize_amount": 5000,
+        "winning_number": "MD980055"
+      },
+      {
+        "prize_tier": "Consolation",
+        "prize_amount": 5000,
+        "winning_number": "ME980055"
+      },
+      {
+        "prize_tier": "Consolation",
+        "prize_amount": 5000,
+        "winning_number": "MF980055"
+      },
+      {
+        "prize_tier": "Consolation",
+        "prize_amount": 5000,
+        "winning_number": "MG980055"
+      },
+      {
+        "prize_tier": "Consolation",
+        "prize_amount": 5000,
+        "winning_number": "MJ980055"
+      },
+      {
+        "prize_tier": "Consolation",
+        "prize_amount": 5000,
+        "winning_number": "MK980055"
+      },
+      {
+        "prize_tier": "Consolation",
+        "prize_amount": 5000,
+        "winning_number": "ML980055"
+      },
+      {
+        "prize_tier": "Consolation",
+        "prize_amount": 5000,
+        "winning_number": "MM980055"
+      },
+      {
+        "prize_tier": "2nd",
+        "prize_amount": 2500000,
+        "winning_number": "MA875469"
+      },
+      {
+        "prize_tier": "3rd",
+        "prize_amount": 500000,
+        "winning_number": "MJ671389"
+      },
+      {
+        "prize_tier": "4th",
+        "prize_amount": 5000,
+        "winning_number": "0307"
+      },
+      {
+        "prize_tier": "4th",
+        "prize_amount": 5000,
+        "winning_number": "0849"
+      },
+      {
+        "prize_tier": "4th",
+        "prize_amount": 5000,
+        "winning_number": "1097"
+      },
+      {
+        "prize_tier": "4th",
+        "prize_amount": 5000,
+        "winning_number": "1991"
+      },
+      {
+        "prize_tier": "4th",
+        "prize_amount": 5000,
+        "winning_number": "2008"
+      },
+      {
+        "prize_tier": "4th",
+        "prize_amount": 5000,
+        "winning_number": "2073"
+      },
+      {
+        "prize_tier": "4th",
+        "prize_amount": 5000,
+        "winning_number": "2831"
+      },
+      {
+        "prize_tier": "4th",
+        "prize_amount": 5000,
+        "winning_number": "2929"
+      },
+      {
+        "prize_tier": "4th",
+        "prize_amount": 5000,
+        "winning_number": "3475"
+      },
+      {
+        "prize_tier": "4th",
+        "prize_amount": 5000,
+        "winning_number": "3711"
+      },
+      {
+        "prize_tier": "4th",
+        "prize_amount": 5000,
+        "winning_number": "3849"
+      },
+      {
+        "prize_tier": "4th",
+        "prize_amount": 5000,
+        "winning_number": "6160"
+      },
+      {
+        "prize_tier": "4th",
+        "prize_amount": 5000,
+        "winning_number": "6405"
+      },
+      {
+        "prize_tier": "4th",
+        "prize_amount": 5000,
+        "winning_number": "7855"
+      },
+      {
+        "prize_tier": "4th",
+        "prize_amount": 5000,
+        "winning_number": "7878"
+      },
+      {
+        "prize_tier": "4th",
+        "prize_amount": 5000,
+        "winning_number": "8042"
+      },
+      {
+        "prize_tier": "4th",
+        "prize_amount": 5000,
+        "winning_number": "8113"
+      },
+      {
+        "prize_tier": "4th",
+        "prize_amount": 5000,
+        "winning_number": "8423"
+      },
+      {
+        "prize_tier": "4th",
+        "prize_amount": 5000,
+        "winning_number": "9488"
+      },
+      {
+        "prize_tier": "5th",
+        "prize_amount": 2000,
+        "winning_number": "1396"
+      },
+      {
+        "prize_tier": "5th",
+        "prize_amount": 2000,
+        "winning_number": "4647"
+      },
+      {
+        "prize_tier": "5th",
+        "prize_amount": 2000,
+        "winning_number": "5314"
+      },
+      {
+        "prize_tier": "5th",
+        "prize_amount": 2000,
+        "winning_number": "6776"
+      },
+      {
+        "prize_tier": "5th",
+        "prize_amount": 2000,
+        "winning_number": "8020"
+      },
+      {
+        "prize_tier": "5th",
+        "prize_amount": 2000,
+        "winning_number": "8952"
+      },
+      {
+        "prize_tier": "6th",
+        "prize_amount": 1000,
+        "winning_number": "0064"
+      },
+      {
+        "prize_tier": "6th",
+        "prize_amount": 1000,
+        "winning_number": "0683"
+      },
+      {
+        "prize_tier": "6th",
+        "prize_amount": 1000,
+        "winning_number": "0764"
+      },
+      {
+        "prize_tier": "6th",
+        "prize_amount": 1000,
+        "winning_number": "0892"
+      },
+      {
+        "prize_tier": "6th",
+        "prize_amount": 1000,
+        "winning_number": "1459"
+      },
+      {
+        "prize_tier": "6th",
+        "prize_amount": 1000,
+        "winning_number": "2050"
+      },
+      {
+        "prize_tier": "6th",
+        "prize_amount": 1000,
+        "winning_number": "2177"
+      },
+      {
+        "prize_tier": "6th",
+        "prize_amount": 1000,
+        "winning_number": "2470"
+      },
+      {
+        "prize_tier": "6th",
+        "prize_amount": 1000,
+        "winning_number": "2697"
+      },
+      {
+        "prize_tier": "6th",
+        "prize_amount": 1000,
+        "winning_number": "4342"
+      },
+      {
+        "prize_tier": "6th",
+        "prize_amount": 1000,
+        "winning_number": "4551"
+      },
+      {
+        "prize_tier": "6th",
+        "prize_amount": 1000,
+        "winning_number": "4640"
+      },
+      {
+        "prize_tier": "6th",
+        "prize_amount": 1000,
+        "winning_number": "4656"
+      },
+      {
+        "prize_tier": "6th",
+        "prize_amount": 1000,
+        "winning_number": "6044"
+      },
+      {
+        "prize_tier": "6th",
+        "prize_amount": 1000,
+        "winning_number": "6499"
+      },
+      {
+        "prize_tier": "6th",
+        "prize_amount": 1000,
+        "winning_number": "7038"
+      },
+      {
+        "prize_tier": "6th",
+        "prize_amount": 1000,
+        "winning_number": "7053"
+      },
+      {
+        "prize_tier": "6th",
+        "prize_amount": 1000,
+        "winning_number": "7183"
+      },
+      {
+        "prize_tier": "6th",
+        "prize_amount": 1000,
+        "winning_number": "7436"
+      },
+      {
+        "prize_tier": "6th",
+        "prize_amount": 1000,
+        "winning_number": "8029"
+      },
+      {
+        "prize_tier": "6th",
+        "prize_amount": 1000,
+        "winning_number": "8247"
+      },
+      {
+        "prize_tier": "6th",
+        "prize_amount": 1000,
+        "winning_number": "8742"
+      },
+      {
+        "prize_tier": "6th",
+        "prize_amount": 1000,
+        "winning_number": "8904"
+      },
+      {
+        "prize_tier": "6th",
+        "prize_amount": 1000,
+        "winning_number": "8951"
+      },
+      {
+        "prize_tier": "6th",
+        "prize_amount": 1000,
+        "winning_number": "9965"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "0312"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "0594"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "0714"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "1052"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "1076"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "1093"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "1298"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "1546"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "1600"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "1670"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "1704"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "1750"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "2048"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "2178"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "2334"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "2343"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "2451"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "2554"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "2575"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "2622"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "2681"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "2787"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "2884"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "2913"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "3266"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "3285"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "3422"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "3663"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "4045"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "4197"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "4272"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "4309"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "4347"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "4373"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "4381"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "4564"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "4725"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "4918"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "5196"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "5560"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "5664"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "5873"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "5879"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "6039"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "6079"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "6091"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "6396"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "6839"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "6967"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "7008"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "7518"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "7638"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "7645"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "7816"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "7945"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "7949"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "8043"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "8356"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "8419"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "8533"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "8550"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "8581"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "8628"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "8756"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "8788"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "8815"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "8930"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "9013"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "9060"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "9113"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "9621"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "9804"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "9933"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "9962"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "9973"
+      },
+      {
+        "prize_tier": "7th",
+        "prize_amount": 500,
+        "winning_number": "9980"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "0100"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "0268"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "0363"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "0416"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "0554"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "0828"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "0938"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "1163"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "1186"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "1197"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "1304"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "1313"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "1352"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "1478"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "1585"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "1969"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "2109"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "2202"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "2239"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "2596"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "2611"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "2702"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "2919"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "3063"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "3100"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "3433"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "3604"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "4093"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "4153"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "4193"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "4314"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "4405"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "4695"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "4731"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "4830"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "4917"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "4928"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "4974"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "5086"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "5478"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "5539"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "5616"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "5686"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "5733"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "5737"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "5764"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "5770"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "5857"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "6077"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "6178"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "6209"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "6292"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "6295"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "6398"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "6465"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "6491"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "6498"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "6521"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "6719"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "7111"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "7199"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "7248"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "7255"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "7265"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "7267"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "7282"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "7430"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "7491"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "7505"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "7553"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "7570"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "7588"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "7680"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "7713"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "8219"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "8227"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "8256"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "8295"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "8396"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "8459"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "8619"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "8833"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "8863"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "8887"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "9277"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "9377"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "9596"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "9605"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "9656"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "9657"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "9892"
+      },
+      {
+        "prize_tier": "8th",
+        "prize_amount": 200,
+        "winning_number": "9961"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "0113"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "0265"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "0337"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "0487"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "0643"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "0712"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "0860"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "0876"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "0942"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "1103"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "1104"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "1122"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "1143"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "1280"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "1294"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "1295"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "1394"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "1402"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "1481"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "1631"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "1748"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "1891"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "1925"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "2021"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "2035"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "2045"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "2070"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "2145"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "2222"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "2267"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "2366"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "2418"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "2453"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "2457"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "2547"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "2551"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "2597"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "2599"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "2656"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "2689"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "2912"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "3001"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "3004"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "3220"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "3375"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "3426"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "3459"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "3512"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "3662"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "3694"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "3712"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "3898"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "3993"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "4024"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "4301"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "4451"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "4520"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "4538"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "4632"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "4658"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "4679"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "4700"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "4720"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "4782"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "4837"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "4866"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "4980"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "4981"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "4999"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "5041"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "5049"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "5096"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "5165"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "5421"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "5471"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "5507"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "5565"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "5627"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "5772"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "5997"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "6023"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "6135"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "6214"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "6247"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "6481"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "6782"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "6810"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "6823"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "6837"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "6927"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "7007"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "7100"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "7151"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "7170"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "7274"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "7368"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "7467"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "7519"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "7573"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "7593"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "7594"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "7620"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "7656"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "7728"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "7901"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "7909"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "7923"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "7934"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "7971"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "7978"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "7980"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "8015"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "8025"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "8110"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "8126"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "8132"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "8136"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "8159"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "8273"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "8370"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "8407"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "8418"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "8429"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "8491"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "8561"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "8580"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "8591"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "8675"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "8750"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "8772"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "8949"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "8999"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "9017"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "9028"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "9129"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "9246"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "9264"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "9318"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "9324"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "9331"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "9349"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "9552"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "9597"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "9659"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "9716"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "9726"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "9814"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "9841"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "9901"
+      },
+      {
+        "prize_tier": "9th",
+        "prize_amount": 100,
+        "winning_number": "9930"
+      }
+    ]
+  },
+  {
     "id": 2,
     "lottery_name": "KARUNYA",
     "draw_code": "KR-770",
