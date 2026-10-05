@@ -2,7 +2,7 @@ name: Update lottery results
 
 on:
   schedule:
-    - cron: '5 15 * * *'
+    - cron: '35 10 * * *'
       timezone: Asia/Kolkata
   workflow_dispatch:
 
