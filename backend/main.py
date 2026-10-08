@@ -51,7 +51,7 @@ init_db()
 scheduler = BackgroundScheduler(timezone="Asia/Kolkata")
 scheduler.add_job(
     _download_and_store_latest_result,
-    CronTrigger(hour=15, minute=5, second=0, timezone="Asia/Kolkata"),
+    CronTrigger(hour=16, minute=50, second=0, timezone="Asia/Kolkata"),
     id="daily_lottery_fetch",
     replace_existing=True,
 )

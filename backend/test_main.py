@@ -4,28 +4,105 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
+import requests
+
 from database import find_ticket_matches, init_db, list_latest_draws, save_draw_result, save_winner
 from parser import _parse_lottery_text
-from result_fetcher import _find_latest_result_url
+from result_fetcher import _find_latest_pdf_path, _get_with_retry, download_latest_result
 from update_public_results import backfill_missing_draw_codes, merge_results
 
 
-class FindLatestResultUrlTests(unittest.TestCase):
-    def test_selects_draw_page_instead_of_generic_pdf(self):
-        html = """
-        <html><body>
-            <a href="http://example.org/draw.pdf">Generic PDF</a>
-            <a href="viewlotisresult.php?drawserial=75393">Latest draw</a>
-            <a href="viewlotisresult.php?drawserial=75392">Older draw</a>
-        </body></html>
-        """
+class HttpRetryTests(unittest.TestCase):
+    @mock.patch("result_fetcher.time.sleep")
+    @mock.patch("result_fetcher.requests.get")
+    def test_retries_a_temporary_connection_failure(self, get, sleep):
+        response = mock.Mock()
+        get.side_effect = [requests.ConnectionError("connection refused"), response]
+
+        result = _get_with_retry("https://example.com/", timeout=30, headers={})
+
+        self.assertIs(result, response)
+        self.assertEqual(get.call_count, 2)
+        sleep.assert_called_once_with(1)
+
+    @mock.patch("result_fetcher.time.sleep")
+    @mock.patch("result_fetcher.requests.get", side_effect=requests.ConnectionError)
+    def test_raises_after_retries_are_exhausted(self, get, sleep):
+        with self.assertRaises(requests.ConnectionError):
+            _get_with_retry("https://example.com/", timeout=30, headers={})
+
+        self.assertEqual(get.call_count, 3)
+        self.assertEqual([call.args[0] for call in sleep.call_args_list], [1, 2])
+
+
+class LatestPdfCommitTests(unittest.TestCase):
+    def test_selects_the_pdf_published_by_the_latest_commit(self):
         self.assertEqual(
-            _find_latest_result_url(html, "https://result.keralalotteries.com/"),
-            "https://result.keralalotteries.com/viewlotisresult.php?drawserial=75393",
+            _find_latest_pdf_path(
+                [
+                    {"filename": "README.md", "status": "modified"},
+                    {
+                        "filename": "lottery_results/KARUNYA PLUS.pdf",
+                        "status": "added",
+                    },
+                ]
+            ),
+            "lottery_results/KARUNYA PLUS.pdf",
         )
 
-    def test_returns_none_when_no_draw_links_exist(self):
-        self.assertIsNone(_find_latest_result_url("<a href='report.pdf'>PDF</a>", "https://example.com/"))
+    def test_rejects_a_commit_without_a_pdf(self):
+        with self.assertRaisesRegex(ValueError, "does not publish a PDF"):
+            _find_latest_pdf_path([{"filename": "README.md", "status": "modified"}])
+
+    def test_rejects_commits_that_publish_multiple_pdfs(self):
+        with self.assertRaisesRegex(ValueError, "changes multiple PDFs"):
+            _find_latest_pdf_path(
+                [
+                    {"filename": "lottery_results/one.pdf", "status": "added"},
+                    {"filename": "lottery_results/two.pdf", "status": "added"},
+                ]
+            )
+
+    @mock.patch("result_fetcher.extract_lottery_results")
+    @mock.patch("result_fetcher._get_with_retry")
+    def test_downloads_and_parses_the_pdf_from_the_latest_commit(
+        self, get, extract_results
+    ):
+        commits_response = mock.Mock()
+        commits_response.json.return_value = [{"sha": "abc123"}]
+        commit_response = mock.Mock()
+        commit_response.json.return_value = {
+            "files": [
+                {
+                    "filename": "lottery_results/KARUNYA PLUS.pdf",
+                    "status": "added",
+                }
+            ]
+        }
+        pdf_response = mock.Mock()
+        pdf_response.content = b"%PDF-1.7 test"
+        get.side_effect = [commits_response, commit_response, pdf_response]
+        extract_results.return_value = {
+            "lottery_name": "KARUNYA PLUS",
+            "draw_code": "KN-644",
+            "draw_date": "2026-10-08",
+            "winners": [],
+        }
+
+        result = download_latest_result()
+
+        pdf_url = (
+            "https://raw.githubusercontent.com/jithin-4T2/pdf-downloader/"
+            "abc123/lottery_results/KARUNYA%20PLUS.pdf"
+        )
+        self.assertEqual(result["pdf_url"], pdf_url)
+        self.assertEqual(
+            result["source_url"],
+            "https://github.com/jithin-4T2/pdf-downloader/blob/"
+            "abc123/lottery_results/KARUNYA%20PLUS.pdf",
+        )
+        self.assertEqual(result["draw_code"], "KN-644")
+        extract_results.assert_called_once_with(pdf_response.content)
 
 
 class LotteryTextParserTests(unittest.TestCase):
